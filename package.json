@@ -11,20 +11,16 @@
   ],
   "devDependencies": {
     "parcel": "^2.0.0-beta.1",
-    "parcel-plugin-robot": "^1.0.0",
-    "parcel-plugin-static-files-copy": "^2.6.0"
-  },
-  "assetsPath": "static",
-  "staticFiles": {
-    "staticPath": "static",
-    "watcherGlob": "**",
-    "staticOutDir": "static/"
+    "shx": "^0.3.2"
   },
   "scripts": {
     "start": "parcel src/index.html",
-    "prebuild": "rm -rf dist",
-    "format": "prettier --config ./.prettierrc.json --write \"src/**/*{.js,.html}\"",
-    "build": "parcel build --public-url . src/index.html"
+    "prebuild-dev": "shx rm -rf dist/*",
+    "build-dev": "parcel build ./src/index.html --no-minify --public-url ./",
+    "prebuild": "shx rm -rf dist/*",
+    "build": "parcel build ./src/index.html --public-url ./",
+    "push-gh-pages": "push-dir --dir=dist --branch=gh-pages --cleanup --verbose",
+    "format": "prettier --config ./.prettierrc.json --write \"src/**/*{.js,.html}\""
   },
   "keywords": [
     "mars",
