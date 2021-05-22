@@ -1,35 +1,15 @@
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import TileWMS from 'ol/source/TileWMS';
-import proj4 from 'proj4';
-import Projection from 'ol/proj/Projection';
-import { register } from 'ol/proj/proj4';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorSource from 'ol/source/Vector';
 import { Circle as CircleStyle, Fill, Stroke, Style, Text } from 'ol/style';
-import geojsonObject from './marsLandingSites.json'
+import geojsonObject from './marsLandingSites.json';
+import XYZ from 'ol/source/XYZ';
 
-// Mars 2000
-// https://spatialreference.org/ref/iau2000/mars-2000/
-/* proj4.defs(
-  'EPSG:49900',
-  'GEOGCS["Mars 2000",DATUM["D_Mars_2000",SPHEROID["Mars_2000_IAU_IAG",3396190.0,169.89444722361179]],PRIMEM["Greenwich",0],UNIT["Decimal_Degree",0.0174532925199433]]'
-);
-register(proj4);
-
-const projection = new Projection({
-  code: 'EPSG:49900',
-  extent: [-180.0, -90.0, 180.0, 90.0],
-  units: 'degrees',
-  getPointResolution: function (r) {
-    return r;
-  }
-}); */
-
-// Points
-function pointStyleFunction(feature, resolution) {
+// Points Style
+const pointStyleFunction = (feature, resolution) => {
   return new Style({
     image: new CircleStyle({
       radius: 10,
@@ -38,7 +18,7 @@ function pointStyleFunction(feature, resolution) {
     }),
     text: new Text({
       text: feature.get('name'),
-      font: 'bold 11px "Open Sans"',
+      font: 'bold 16px Open Sans',
       fill: new Fill({
         color: '#fff'
       }),
@@ -46,13 +26,13 @@ function pointStyleFunction(feature, resolution) {
         color: 'red',
         width: 1
       }),
-      offsetY: -15,
+      offsetY: -16,
       offsetX: 16,
       textAlign: 'left',
       textBaseline: 'middle'
     })
   });
-}
+};
 
 // Mars Vector Layer
 var marsData = new VectorSource({
@@ -62,18 +42,17 @@ var marsData = new VectorSource({
 });
 var marsLayer = new VectorLayer({
   source: marsData,
-  style: pointStyleFunction
+  style: pointStyleFunction,
+  declutter: false
 });
 
 // Basemap Layer
 // https://astrowebmaps.wr.usgs.gov/webmapatlas/Layers/maps.html
-// https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&service=WMS&request=GetCapabilities
 // OpenPlanetary Basemaps : https://www.openplanetary.org/opm/basemaps
 const layers = [
   new TileLayer({
-    source: new TileWMS({
-      url: 'https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map',
-      params: { LAYERS: 'MDIM21_color' },
+    source: new XYZ({
+      url: 'http://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/celestia_mars-shaded-16k_global/{z}/{x}/{-y}.png',
       wrapX: false
     }),
     projection: 'EPSG:4326'
